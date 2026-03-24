@@ -41,6 +41,23 @@ func (b *linuxBackend) EnumerateDevices(opts audio.EnumerateOpts) ([]audio.Audio
 	return devices, nil
 }
 
+// DetectDefaults finds the default input and output device names.
+func (b *linuxBackend) DetectDefaults(devices []audio.AudioDeviceInfo) (defaultInput, defaultOutput string) {
+	for _, d := range devices {
+		if d.HasInput() && defaultInput == "" {
+			if strings.Contains(d.Name, "hw:0") || strings.Contains(d.Name, "default") {
+				defaultInput = d.Name
+			}
+		}
+		if d.HasOutput() && defaultOutput == "" {
+			if strings.Contains(d.Name, "hw:0") || strings.Contains(d.Name, "default") {
+				defaultOutput = d.Name
+			}
+		}
+	}
+	return
+}
+
 var cardLineRe = regexp.MustCompile(`^\s*(\d+)\s+\[(\w+)\s*\]:\s+\S+\s+-\s+(.+)$`)
 
 func parseCards() ([]audio.CardInfo, error) {
