@@ -2,8 +2,13 @@ package cli
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
+
+	"github.com/meganerd/go-audio-interrogator/internal/audio"
+	"github.com/meganerd/go-audio-interrogator/internal/backend"
+	"github.com/meganerd/go-audio-interrogator/internal/output"
 )
 
 var (
@@ -40,6 +45,57 @@ func Execute(version string) error {
 }
 
 func run(cmd *cobra.Command, args []string) error {
-	fmt.Println("go-audio-interrogator - not yet implemented")
+	be := backend.NewPlatformBackend()
+
+	// Handle --list mode
+	if listCards {
+		cards, err := be.ListCards()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Warning: Failed to list cards: %v\n", err)
+			return nil
+		}
+		output.PrintCardList(cards)
+		return nil
+	}
+
+	if verbose && !jsonOutput {
+		fmt.Println("🎵 Audio Interrogator - Scanning system audio devices...\n")
+	}
+
+	// Enumerate devices
+	opts := audio.EnumerateOpts{NoProc: noProc}
+	devices, err := be.EnumerateDevices(opts)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Warning: Failed to enumerate devices: %v\n", err)
+	}
+
+	// Apply filters
+	devices = audio.FilterDevices(devices, cardFilter, devFilter, showAll)
+
+	// Build system info
+	info := audio.NewSystemAudioInfo(devices)
+
+	// Detect defaults
+	for _, d := range devices {
+		if d.HasInput() && info.DefaultInput == "" {
+			info.DefaultInput = d.Name
+		}
+		if d.HasOutput() && info.DefaultOutput == "" {
+			info.DefaultOutput = d.Name
+		}
+	}
+
+	if jsonOutput {
+		return output.PrintJSON(info)
+	}
+
+	// Text output
+	cards, err := be.ListCards()
+	if err == nil {
+		output.PrintCardSummary(cards)
+	}
+	output.PrintSystemSummary(info)
+	output.PrintDeviceList(info.Devices, verbose)
+
 	return nil
 }
