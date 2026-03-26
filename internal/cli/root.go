@@ -59,7 +59,7 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	if verbose && !jsonOutput {
-		fmt.Println("🎵 Audio Interrogator - Scanning system audio devices...\n")
+		fmt.Println("🎵 Audio Interrogator - Scanning system audio devices...")
 	}
 
 	// Enumerate devices
