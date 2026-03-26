@@ -21,7 +21,8 @@ func PrintCardSummary(cards []audio.CardInfo) {
 }
 
 func PrintSystemSummary(info audio.SystemAudioInfo) {
-	fmt.Println("\n════════════════════════════════════════")
+	fmt.Println()
+	fmt.Println("════════════════════════════════════════")
 	fmt.Println("         SYSTEM AUDIO SUMMARY")
 	fmt.Println("════════════════════════════════════════")
 	fmt.Printf("Total Devices Found: %d\n", len(info.Devices))
@@ -37,9 +38,10 @@ func PrintSystemSummary(info audio.SystemAudioInfo) {
 }
 
 func PrintDeviceList(devices []audio.AudioDeviceInfo, verbose bool) {
-	fmt.Println("\n════════════════════════════════════════")
+	fmt.Println()
+	fmt.Println("════════════════════════════════════════")
 	fmt.Println("           DEVICE DETAILS")
-	fmt.Println("════════════════════════════════════════\n")
+	
 
 	for i, d := range devices {
 		if verbose {
@@ -50,7 +52,8 @@ func PrintDeviceList(devices []audio.AudioDeviceInfo, verbose bool) {
 	}
 
 	if !verbose {
-		fmt.Println("\nUse --verbose flag for detailed device information")
+		fmt.Println()
+		fmt.Println("Use --verbose flag for detailed device information")
 		fmt.Println("Use --card <id> to filter by card, --device <name> to filter by name")
 		fmt.Println("Use --all to show all devices including duplicates")
 	}
@@ -93,7 +96,8 @@ func PrintCardList(cards []audio.CardInfo) {
 	for _, c := range cards {
 		fmt.Printf("  %s [%s]: %s\n", c.ID, c.ShortName, c.Description)
 	}
-	fmt.Println("\nUsage examples:")
+	fmt.Println()
+	fmt.Println("Usage examples:")
 	fmt.Println("  go-audio-interrogator --card 0        # Show devices for card0")
 	fmt.Println("  go-audio-interrogator --card card1    # Show devices for card1")
 	fmt.Println("  go-audio-interrogator --device Audio  # Show devices matching 'Audio'")
